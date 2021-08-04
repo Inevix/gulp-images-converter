@@ -1,18 +1,29 @@
 const gulp = require('gulp');
+const jimp = require('gulp-jimp');
 const rename = require('gulp-rename');
-const imagesConvert = require('gulp-images-convert');
 const del = require('del');
 
 const path = {
     converted: 'converted/',
     src: 'src/*.png',
-    clean: 'converted/*'
+    clean: 'converted/*.jpg'
 };
 
 const convert = () => gulp
     .src(path.src)
-    .pipe(imagesConvert({ targetType: 'jpg' }))
-    .pipe(rename({extname: '.png'}))
+    .pipe(jimp({
+        quality: 60
+    }))
+    .pipe(rename(({ dirname, basename, extname }) => {
+        basename = basename.replace('quality', '');
+        extname = '.jpg';
+
+        return {
+            dirname,
+            basename,
+            extname
+        }
+    }))
     .pipe(gulp.dest(path.converted));
 
 const clean = () => del([path.clean]);
